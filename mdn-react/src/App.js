@@ -18,6 +18,10 @@ function App(props) {
       completed={task.completed} 
       key={task.id} />)
     );
+  
+  const tasksNoun = taskList.length !== 1 && taskList.length !== 0 ? 'tasks' : 'task';
+  const headingText = `${taskList.length} ${tasksNoun} remaining`;
+    
 
   return (
     <div className="todoapp stack-large">
@@ -37,7 +41,7 @@ function App(props) {
         </button>
       </div>
       <h2 id="list-heading">
-        3 tasks remaining
+        {headingText}
       </h2>
       <ul
         role="list"
