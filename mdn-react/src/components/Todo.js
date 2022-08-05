@@ -1,8 +1,19 @@
-import React, {useState} from "react";
+import React, {useEffect, useRef, useState} from "react";
+
+function usePrevious(value) {
+  const ref = useRef();
+  useEffect(() => {
+    ref.current = value;
+  });
+  return ref.current;
+}
 
 export default function Todo(props){
   const [isEditing, setEditing] = useState(false);
   const [newName, setNewName] = useState('');
+  const editFieldRef = useRef(null);
+  const editButtonRef = useRef(null);
+  const wasEditing = usePrevious(isEditing);
 
   function handleChange(e) {
     setNewName(e.target.value);
@@ -20,7 +31,13 @@ export default function Todo(props){
         <label className="todo-label" htmlFor={props.id}>
           New name for {props.name}
         </label>
-        <input id={props.id} className="todo-text" type="text" onChange={handleChange}/>
+        <input 
+          id={props.id} 
+          className="todo-text" 
+          type="text" 
+          onChange={handleChange}
+          ref={editFieldRef}
+          />
       </div>
       <div className="btn-group">
         <button type="button" className="btn todo-cancel" onClick={() => 
@@ -35,7 +52,7 @@ export default function Todo(props){
       </div>
     </form>
 );
-const viewTemplate = (
+  const viewTemplate = (
   <div className="stack-small">
     <div className="c-cb">
         <input
@@ -43,6 +60,7 @@ const viewTemplate = (
           type="checkbox"
           defaultChecked={props.completed}
           onChange={() => props.toggleTaskCompleted(props.id)}
+          ref={editButtonRef}
         />
         <label className="todo-label" htmlFor={props.id}>
           {props.name}
@@ -63,6 +81,17 @@ const viewTemplate = (
       </div>
   </div>
 );
+
+useEffect(() => {
+  if (!wasEditing && isEditing) {
+    editFieldRef.current.focus();
+  }
+  if (wasEditing && !isEditing) {
+    editButtonRef.current.focus();
+  }
+}, [wasEditing, isEditing]);
+
+
 return <li className="todo">{isEditing ? editingTemplate : viewTemplate}</li>;
 
 }
